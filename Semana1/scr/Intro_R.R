@@ -190,4 +190,5 @@ x + 1
 #extraer las 5 primeras columnas con las 10 primeras filas
    datosmatriz <- datos[1:10, 1:5]
    View(datosmatriz) 
-
+#archivo final
+write.csv(x = datosmatriz, file = 'Minimatriz.csv')
