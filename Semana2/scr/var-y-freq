@@ -466,7 +466,7 @@ Tabla_medidas1
 #Cálculo del Índice de Masa Corporal (IMC)
 IMC_1 <- peso/estatura^2 
 IMC_1
-IMC <- round(IMC, digits = 2)
+IMC <- round(IMC_1, digits = 2)
 IMC
 
 Tabla_medidas_IMC <- cbind.data.frame(Tabla_medidas1, IMC)
