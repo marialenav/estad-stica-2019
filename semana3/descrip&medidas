@@ -1,0 +1,619 @@
+#Título: "Semana3_Descriptores&Medidas"
+#Autor: "María Alejandra Navarro"
+
+## Objetivos
+
+
+## Medidas de tendencia central
+
+### Media o promedio
+data(iris)
+
+iris
+
+# Sumatorio de las longitud del pÃ©talo de la especie setosa
+pl.Setosa <- sum(iris$Petal.Length[which(iris$Species=='setosa')])
+
+pl.Setosa
+
+#  ¿Cuál es la longitud de la muestra?
+
+dim(iris)
+
+length(iris) #número de columnas 
+
+nrow(iris) #número de filas
+
+length(iris$Petal.Length)
+
+length(iris$Petal.Length[which(iris$Species=='setosa')])
+
+# n de nuestra pregunta
+n<-length(iris$Petal.Length[which(iris$Species=='setosa')])
+
+n
+
+# média aritmética 
+promedio<- pl.Setosa/n
+
+promedio
+
+mi.promedio <- function(x) {
+  
+  mi.suma<- sum(x)
+  mi.n<-length(x)
+  mi.prom <- mi.suma/mi.n
+  return(mi.prom)
+}
+mi.promedio(x= iris$Petal.Length[which(iris$Species=='setosa')])
+
+mean(iris$Petal.Length[which(iris$Species=='setosa')])
+
+hist(iris$Petal.Length[which(iris$Species=='setosa')])
+
+####**Ejer:** Si la columna iris$Petal.Length tuviera valores 'NA', ¿cómo podría eliminarlos 
+#antes de hacer la estimación de la media?
+
+
+
+iris[!is.na(iris$Petal.Length),] #!is.na para eliminar valores na
+
+
+
+####Estime la media aritmética de la altura, la longitud y el ancho del caparazón de las tortugas pintadas [data(tortues), paquete: *ade4*], 
+#use la función apply para obtener los estadíticos de cada medida en un mismo vector.
+
+library(ade4)
+data(tortues)
+tortues
+
+media_caparazón <- apply(tortues[,1:3], 2, mean) #media de las columnas del 1 al 3 (altura, longitud y ancho)
+media_caparazón
+
+
+## OTRAS MEDIAS
+library(psych)
+
+#MEDIA ARMÓNICA.
+
+harmonic.mean(iris$Petal.Length[which(iris$Species=='setosa')])
+
+#MEDIA GEOMÉTRICA.
+
+geometric.mean(iris$Petal.Length[which(iris$Species=='setosa')])
+
+
+## MEDIANA
+# Voy a escribir mis datos de trabajos en un objeto llamado setosa
+
+setosa <- iris$Petal.Length[which(iris$Species=='setosa')]
+
+# Ordenar
+
+sort(setosa)
+
+# longitud de setosa
+n
+
+# Mediana Es el punto medio del vector
+
+median(setosa)
+
+####**Ejer:** Genere una función propia que le permita encontrar la mediana, tal y como lo hizo 
+#con la media aritmética.
+
+
+
+median(setosa)
+
+
+##MODA
+# moda estadística?
+mode(setosa)
+
+# en este punto hay que generar la función
+
+freq <- table(setosa)
+freq
+
+freq[which.max(freq)]
+
+####**Ejer:** Genere una función propia que le permita calcular la moda.
+
+moda_1 <- function(x) {FREC <- table(x)
+frec_moda <- FREC[which.max(FREC)]
+return(frec_moda)}
+
+
+moda_1(setosa)
+
+# Rango = x
+range(setosa)
+
+# Freq = y
+min(freq)
+max(freq)
+
+# distribuciÃ³n de frecuencias de setosa
+hist(setosa, # histogram
+     col = "peachpuff", # column color
+     border = "black", 
+     prob = TRUE, # show densities instead of frequencies
+     xlim = c(0.5,2.5),
+     xlab = "Longitud de pétalo",
+     main = "Frecuencias de longitud de pétalo de setosa")
+lines(density(setosa),
+      lwd = 2, # thickness of line
+      col = "chocolate3") # Generar la distribuciÃ³n continua distribuciÃ³n de masa a partir de los datos observados
+
+# Graficar la media
+abline(v = mean(setosa),
+       col = "royalblue",
+       lwd = 2)
+
+#graficar la mediana
+abline(v = median(setosa),
+       col = "red",
+       lwd = 2)
+
+#poner la leyenda
+legend(x = "topright", # location of legend within plot area
+       c("Density plot", "Mean", "Median"),
+       col = c("chocolate3", "royalblue", "red"),
+       lwd = c(2, 2, 2))
+####**Ejer:** Después de generar la función del cálculo de moda, grafíquela sobre el histograma.
+
+#graficar la moda.
+abline(v = 1.4,
+       col = "springgreen1",
+       lwd = 2)
+
+#poner la leyenda con la moda
+legend(x = "topright", # location of legend within plot area
+       c("Density plot", "Mean", "Median", "Mode"),
+       col = c("chocolate3", "royalblue", "red", "springgreen1"),
+       lwd = c(2, 2, 2, 2))
+
+mean(setosa) #media
+median(setosa) #mediana
+moda_1(setosa) #moda
+
+##Medidas de posición
+
+# moda estadísstica?
+density(setosa)
+
+# Cuantíl
+
+quantile(setosa)
+
+# Longitudes menores o iguales al 80%
+quantile(setosa,probs = 0.8)
+
+
+# Cuartíl
+quantile(setosa,probs = c(seq(0, 1, 0.25)))
+
+####**Ejer:** Genere los cuantiles en intervalos de 0.5
+#Existen otras funciones que nos permiten generar cuartiles, incluyendo informaciÃ³n de tendencias centrales. 
+#Es decir, *density()* pero más resumido.
+
+quantile(setosa, probs = c(seq(0,1, 0.5)))
+
+
+
+# summary
+summary(setosa)
+
+# Lo interesante no es summary, es cómo estraer información de acá y poderlo graficar
+
+str(summary(setosa))
+x <- summary(setosa)
+class(x)
+# Obtener minimo 
+x[1]
+
+# distribuciÃ³n de frecuencias de setosa
+hist(setosa, # histogram
+     col = "grey80", # column color
+     border = "black", 
+     prob = TRUE, # show densities instead of frequencies
+     xlim = c(0.5,2.5),
+     xlab = "Longitud de pétalo",
+     main = "Frecuencias de longitud de pétalo de setosa")
+lines(density(setosa),
+      lwd = 2, # thickness of line
+      col = "chocolate3") # Generar la distribuciÃ³n continua distribuciÃ³n de masa a partir de los datos observados
+
+# Graficar la media
+
+abline(v = x[2],
+       col = "red1",
+       lwd = 2)
+
+abline(v = x[3],
+       col = "red4",
+       lwd = 2)
+
+abline(v = x[4],
+       col = "blue",
+       lwd = 2)
+
+abline(v = x[5],
+       col = "red1",
+       lwd = 2)
+
+legend(x = "topright", # location of legend within plot area
+       c("Density plot","1st Qu", "Mean", "Median","3st Qu" ),
+       col = c("chocolate3", "royalblue", "red"),
+       lwd = c(2, 2, 2))
+
+# aggregate() *permite asignar una operación sobre los niveles de una variable.
+
+aggregate(iris[,1:4], list(Especies = iris$Species), mean)
+
+####**Ejer:** ¿Qué sucede si el número de columnas deseado no se especifica? 
+#Obtenga la mediana, la moda y los cuantiles para cada especie de iris y para cada variable morfométrica.
+
+aggregate(iris[,], list(Especies = iris$Species), mean)
+#Si no se especifica el número de columnas deseado, aparece la columna de espcies y como no tiene 
+#valores numéricos, sale *NA*
+
+#mediana de cada especie de irir para cada variable morfométrico
+aggregate(iris[,1:4], list(Especies = iris$Species), median) 
+
+#moda de cada especie de irir para cada variable morfométrico
+aggregate(iris[,1:4], list(Especies = iris$Species), moda_1)
+
+
+##Medidas de dispersión 
+# voy a campo y mido dos poblaciones de pájaros
+pop1 <-abs(rnorm(200,mean = 6,sd = 1))
+
+pop2 <-abs(rnorm(200,mean = 6,sd = 5))
+
+
+pops<-cbind(pop1,pop2)
+pops
+
+
+##varianza y desviación estándar
+
+# Varianza
+apply(pops,2,var)
+
+# SD
+
+apply(pops,2,sd)
+
+plot(density(pops[,1]))
+
+plot(density(pops[,2]))
+
+summary(pops)
+
+boxplot(x = pops,notch=T)
+
+####**Ejer:** grafique la distribución de frecuencias de cada población usando histograma y densidad 
+#en el mismo gráfico. Adiciones la media, la mediana y la moda.
+
+#usar summary
+p <- summary(pop1)
+
+# distribuciÃ³n de frecuencias de setosa
+hist(pop1, # histogram
+     col = "darkolivegreen1", # column color
+     border = "black", 
+     prob = TRUE, # show densities instead of frequencies
+     xlim = c(0,10),
+     xlab = "frecuencias",
+     main = "Frecuencias de la población 1")
+lines(density(pop1),
+      lwd = 2, # thickness of line
+      col = "firebrick") # Generar la distribuciÃ³n continua distribuciÃ³n de masa a partir de los datos observados
+
+# Graficar la media
+abline(v = p[3],
+       col = "darkorange",
+       lwd = 2)
+
+#graficar la mediana
+abline(v = p[4],
+       col = "deepskyblue4",
+       lwd = 2)
+
+#hallar la moda
+moda_1(pop1)
+
+#graficar la moda
+abline(v = 2.95368363584842,
+       col = "red",
+       lwd = 2)
+
+legend(x = "topright", # location of legend within plot area
+       c("Density plot", "Mean", "Median","Moda" ),
+       col = c("firebrick", "darkorange", "deepskyblue4", "red"),
+       lwd = c(2, 2, 2))
+
+
+#graficar la población 2
+p2 <- summary(pop2)
+
+hist(pop2, # histogram
+     col = "antiquewhite", # column color
+     border = "black", 
+     prob = TRUE, # show densities instead of frequencies
+     xlim = c(0,20),
+     xlab = "frecuencias",
+     main = "Frecuencias de la población 2")
+lines(density(pop2),
+      lwd = 2, # thickness of line
+      col = "chartreuse") # Generar la distribuciÃ³n continua distribuciÃ³n de masa a partir de los datos observados
+
+# Graficar la media
+abline(v = p2[3],
+       col = "darkmagenta",
+       lwd = 2)
+
+#graficar la mediana
+abline(v = p2[4],
+       col = "dodgerblue",
+       lwd = 2)
+
+#hallar la moda
+moda_1(pop2)
+
+#graficar la moda
+abline(v = 0.0288382961023661,
+       col = "darkgoldenrod1",
+       lwd = 2)
+
+legend(x = "topright", # location of legend within plot area
+       c("Density plot", "Mean", "Median","Moda" ),
+       col = c("chartreuse", "darkmagenta", "dodgerblue", "darkgoldenrod1"),
+       lwd = c(2, 2, 2))
+
+#Estos estadÃ�sticos descriptivos pueden ser resumidos en una tabla usando la funciÃ³n describe(). 
+#Para mÃ¡s informaciÃ³n podemos ir a ayuda para poder ver los parÃ¡metros de la funciÃ³n.
+
+
+help("describe")
+
+
+# Para las dos columnas quÃ© representan poblaciones
+describe(pops)
+
+##medidad de forma
+
+# Podemos ver lo msmo para niveles internos
+
+for (i in 1:4){
+  
+  plot(density(iris[,i]), main = colnames(iris)[i])
+}
+
+##Asimetría
+#cálculo
+
+library(EnvStats)
+
+skewness(pops[,1], na.rm = FALSE, method = "fisher")
+
+plot(density(pops[,1]), main= 'Pop1')
+abline(v= mean(pops[,1]))
+
+skewness(pops[,2], na.rm = FALSE, method = "fisher")
+
+plot(density(pops[,2]), main= 'Pop3')
+abline(v= mean(pops[,2]))
+
+aggregate(iris[,1:4],list(Especies= iris$Species), skewness, na.rm = FALSE, method = "fisher")
+
+set.seed(999)
+n.sample <- rnorm(n = 10000, mean = 55, sd = 4.5)
+
+skewness(n.sample, na.rm = FALSE, method = "fisher")
+plot(density(n.sample), main= 'Pop3')
+abline(v= mean(n.sample))
+
+
+### Medidas de Apuntamiento
+
+### Curtosis
+
+apply(pops,2,kurtosis)
+
+kurtosi(iris$Sepal.Length[which(iris$Species == 'setosa')])
+
+kurtosi(n.sample)
+
+# Podemos ver lo mismo que describe(), pero para niveles internos
+
+describe.by(iris[,1:4],group = iris$Species)
+
+####**Ejer:** Lea el resumen y las grÃ¡ficas del articulo de Magund 2007. 
+#Cargue los datos llamados '2007_EAA_Magud_et_al_data.csv' usando la funciÃ³n read.csv(). 
+#Estime todos los estadÃ�sticos vistos en esta prÃ¡ctica para las variables 'body length', 
+#'tubercles 1b apart' y 'tarsus I length'.
+#Grafique sus anÃ¡lisis y exportelos usando las funciones PNG o PDF. 
+#Escriba un pÃ¡rrafo de no mÃ¡s de 200 analizando lo que encontrÃ³. 
+#Tenga en cuenta que solo describir las salidas implica descripciÃ³n de resultados no anÃ¡lisis.
+setwd("C:/Users/USER/OneDrive/Documentos/NUEVO/libros biologia/ESTADÍSTICA/LABORATORIO/TRABAJOS EN CLASE/Semana 3") 
+datos.ejer <- read.csv("2007_EAA_Magud_et_al_data.csv", header = TRUE, sep = ",")
+View(datos.ejer)
+
+
+nuevos_datos <- datos.ejer[, c(1,2,17,22)]
+nuevos_datos
+
+# Varianza
+apply(nuevos_datos[2:4],2,var)
+
+# SD
+
+apply(nuevos_datos[2:4],2,sd)
+
+plot(density(nuevos_datos[,2]))
+
+plot(density(nuevos_datos[,2]))
+
+plot(density(nuevos_datos[,4]))
+
+summary(nuevos_datos)
+
+boxplot(x = nuevos_datos$A,notch=F)
+
+pob_1A <- nuevos_datos$A[which(nuevos_datos$Traits=='I BK')]
+pob_1A
+boxplot(pob_1A,notch = F)
+
+
+pob_2A <- nuevos_datos$A[which(nuevos_datos$Traits=='II IV')]
+pob_2A
+boxplot(pob_2A,notch = F)
+
+
+pob_3A <- nuevos_datos$A[which(nuevos_datos$Traits=='II BK')]
+pob_3A
+boxplot(pob_3A,notch = F)
+
+
+pob_4A <- nuevos_datos$A[which(nuevos_datos$Traits=='I IV')]
+pob_4A
+boxplot(pob_4A,notch = F)
+
+
+##promedio de los datos de la longitud del cuerpo*A* en la población 1 *I BK*
+mean(pob_1A)
+mean(x= nuevos_datos$A[which(nuevos_datos$Traits=='I BK')])
+
+#mediana 
+median(pob_1A)
+
+#moda
+moda_1(pob_1A)
+
+##promedio de los datos de la longitud del cuerpo*A* en la población 2 *II IV*
+mean(pob_2A)
+mean(x= nuevos_datos$A[which(nuevos_datos$Traits=='II IV')])
+
+#mediana 
+median(pob_2A)
+
+#moda
+moda_1(pob_2A)
+
+##promedio de los datos de la longitud del cuerpo*A* en la población 2 *II BK*
+mean(pob_3A)
+mean(x= nuevos_datos$A[which(nuevos_datos$Traits=='II BK')])
+
+#mediana 
+median(pob_3A)
+
+#moda
+moda_1(pob_3A)
+
+#rangos
+min(datos.ejer$A)
+max(datos.ejer$A)
+range(datos.ejer$A)
+
+
+
+#grafica histograma de la longitud del cuerpo
+hist(datos.ejer$A, # histogram
+     col = "peachpuff", # column color
+     border = "black", 
+     prob = TRUE, # show densities instead of frequencies
+     xlim = c(130, 250),
+     xlab = "Longitud del cuerpo",
+     main = "Longitud del cuerpo")
+lines(density(datos.ejer$A),
+      lwd = 2, # thickness of line
+      col = "chocolate3") # Generar la distribuciÃ³n continua distribuciÃ³n de masa a partir de los datos observados
+
+# Graficar la media
+abline(v = mean(datos.ejer$A),
+       col = "royalblue",
+       lwd = 2)
+
+#graficar la mediana
+abline(v = median(datos.ejer$A),
+       col = "red",
+       lwd = 2)
+
+#poner la leyenda
+legend(x = "topright", # location of legend within plot area
+       c("Density plot", "Mean", "Median"),
+       col = c("chocolate3", "royalblue", "red"),
+       lwd = c(2, 2, 2))
+####**Ejer:** Después de generar la función del cálculo de moda, grafíquela sobre el histograma.
+
+#graficar la moda.
+moda_1(datos.ejer$A)
+abline(v = 149.58,
+       col = "springgreen1",
+       lwd = 2)
+
+#poner la leyenda con la moda
+legend(x = "topright", # location of legend within plot area
+       c("Density plot", "Mean", "Median", "Mode"),
+       col = c("chocolate3", "royalblue", "red", "springgreen1"),
+       lwd = c(2, 2, 2, 2))
+
+mean(datos.ejer$A) #media
+median(datos.ejer$A) #mediana
+moda_1(datos.ejer$A) #moda
+
+summary(datos.ejer$A)
+summary(pob_1A)
+summary(pob_2A)
+summary(pob_3A)
+summary(pob_4A)
+
+A1 <- summary(pob_1A)
+A2 <- summary(pob_2A)
+A3 <- summary(pob_3A)
+A4 <- summary(pob_4A)
+
+#GRÁFICA HISTOGRAMA POBLACIÓN 1
+hist(pob_1A, # histogram
+     col = "peachpuff", # column color
+     border = "black", 
+     prob = TRUE, # show densities instead of frequencies
+     xlim = c(130, 250),
+     xlab = "Longitud del cuerpo",
+     main = "Longitud del cuerpo")
+lines(density(pob_1A),
+      lwd = 2, # thickness of line
+      col = "chocolate3") # Generar la distribuciÃ³n continua distribuciÃ³n de masa a partir de los datos observados
+
+# Graficar la media
+abline(v = A1[4],
+       col = "royalblue",
+       lwd = 2)
+
+#graficar la mediana
+abline(v = A1[3],
+       col = "red",
+       lwd = 2)
+
+#poner la leyenda
+legend(x = "topright", # location of legend within plot area
+       c("Density plot", "Mean", "Median"),
+       col = c("chocolate3", "royalblue", "red"),
+       lwd = c(2, 2, 2))
+
+#graficar la moda.
+moda_1(pob_1A)
+abline(v = 154.04,
+       col = "springgreen1",
+       lwd = 2)
+
+#poner la leyenda con la moda
+legend(x = "topright", # location of legend within plot area
+       c("Density plot", "Mean", "Median", "Mode"),
+       col = c("chocolate3", "royalblue", "red", "springgreen1"),
+       lwd = c(2, 2, 2, 2))
+
+
