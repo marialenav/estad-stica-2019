@@ -102,9 +102,14 @@ median(setosa)
 ####**Ejer:** Genere una función propia que le permita encontrar la mediana, tal y como lo hizo 
 #con la media aritmética.
 
-
+mediana_par <- function(x) {
+  
+  orden <- sort(x)
+  (orden[length(x)/2]+ orden[(length(x)/2)+1])/ 2
+}
 
 median(setosa)
+mediana_par(setosa)
 
 
 ##MODA
@@ -126,6 +131,7 @@ return(frec_moda)}
 
 
 moda_1(setosa)
+
 
 # Rango = x
 range(setosa)
