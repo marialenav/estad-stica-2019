@@ -1,4 +1,4 @@
-#título: "Semanana5_Distribuiciones_&_Teorema"
+ #título: "Semanana5_Distribuiciones_&_Teorema"
  #Autor: María Alejandra Navarro
  
  
@@ -135,15 +135,34 @@
   ####Ejer: A partir del tortues del paquete ade4, calcule el promedio y la desviación estándar 
   #de las alturas de caparazones de las tortugas. Haga el análisis por sexo y grafíquelo.
   
+  data(tortues)
+  
+  tortues
+  #promedio de las alturas de caparazones de tortugas por sexo
+  aggregate(tortues$larg,by = list(tortues$sexe), FUN = mean) 
+  #desviación estandar de las alturas de caparazones de tortugas por sexo
+  aggregate(tortues$larg,by = list(tortues$sexe), FUN = sd)
+  #aplicar la función *mean()* a cada sexo
+  mean_larg <- tapply(tortues$long, tortues$sexe, mean)
+  mean_larg
+  #graficar la media
+  barplot(mean_larg, col = rainbow(5))
+
+  #aplicar la función *sd()* a cada sexo
+  sd_larg <- tapply(tortues$long, tortues$sexe, sd)
+  sd_larg
+  #graficar la media
+  barplot(sd_larg, col = rainbow(5))
+  
   #Existen otro tipo de distribuciones que pueden modelar fenómenos biológicos cómo uniforme, gamma, log-normal. 
   #Uno de los más usados en campos como ecología son los modelos de crecimiento poblacional.
   
   ####Ejer: Lea el artículo sobre tipos de crecimientos poblacionales y 
   #escriba el código en R que mejor describa el ejemplo de las bacterias en crecimiento exponencial.
   
-  
-  
-  
+  Tamaño = c(100, 200, 400, 800, 1600)
+  Horas =  0:4
+  plot(Horas, Tamaño, main = "Crecimiento exponencial", type = "b")
   
   
   ##Muestreo
@@ -160,7 +179,7 @@
   # Muestreo estratificado
   
   library( sampling )
-help("strata")
+  help("strata")
   
   # muestreo estratificado sin repetición---- sin reemplazo
   estratos <- strata( iris, stratanames = c("Species"), size = c(20,20,20), method = "srswor" )#muestree 20 ind de cada estrato
@@ -236,5 +255,9 @@ help("strata")
   n.matriz <- getdata(matriz_long, x)  
   n.matriz
   
+  #Hacer una gráfica
   
+  summary(nuevo_long)
+  hist(nuevo_long, main = "Tallas en peces", xlab ="Longitud", ylab = "Frecuencia", col = "coral")  
   
+       
