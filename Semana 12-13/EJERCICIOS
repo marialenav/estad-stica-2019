@@ -1,0 +1,61 @@
+###### SEMANA 12 Y 13 ###############
+
+#Autor: Maria Alejandra Navarro Corredor
+
+if(!require(ape)){install.packages("ape")}
+if(!require(ggplot2)){install.packages("ggplot2")}
+if(!require(ggridges)){install.packages("ggridges")}
+if(!require(plyr)){install.packages("plyr")}
+if(!require(Rmisc)){install.packages("Rmisc")}
+if(!require(dplyr)){install.packages("dplyr")}
+if(!require(biotools)){install.packages("biotools")}
+
+if(!require(moments)){install.packages("moments")}
+if(!require(nortest)){install.packages("nortest")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+if(!require(car)){install.packages("car")}
+if(!require(HardyWeinberg)){install.packages("HardyWeinberg")}
+
+#EJER: Lea el archivo Morphological_data.csv. Genere una subtabla con solo las muestras de México. Tome una variable cuantitativa y evalue normalidad.
+
+install.packages("readr")
+library("readr")
+
+getwd()
+setwd("C:/Users/USER/OneDrive/Documentos/NUEVO/libros biologia/ESTADÍSTICA/Laboratorio/github/TRABAJOS EN CLASE/semana 12 y 13")
+Data <- read_csv("Morphological_data.csv")
+View(Data)
+
+Mexico <- Data[which (Data$COUNTRY == "mx"),]
+View(Mexico)
+
+
+Mexico$BL
+
+lillie.test(x = Mexico$BL ) #se usa este test por tener una muestra mayor a 50 
+
+#con un p-value de 0.3075, los datos de la  variable BL en México se dicen que tienen una distribución normal. 
+
+
+
+#Ejer: Busque una variable de la tabla de datos Mexicanos y transformela. ¿Se ajustó a los supuestos de normalidad?
+
+#variable WB
+lillie.test(x = Mexico$DB)
+#P-value de 1.628e-05, menor al valor de significancia, por lo tanto, se rechaza la hipótesis nula de una población con distribución normal
+
+#Transformación.
+T_tuk =  transformTukey(Mexico$DB) #No se ajustó a los supuestos de normalidad.
+
+
+#Datos Estados Unidos 
+EEUU <- Data[which (Data$COUNTRY == "us"),]
+View(EEUU)
+
+shapiro.test(x = EEUU$WB) # se aplica el test de Shapito,porque la muestra es menor a 50
+#Los datos no tienen una distribución normal
+
+#transformación
+T_tuk =  transformTukey(EEUU$WB)
+#Los datos se transformaron, con un p.value de 0.9127, los datos se ajustan a una distribución normal.
+
