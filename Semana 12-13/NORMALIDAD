@@ -1,0 +1,475 @@
+#título: Semana12-13 Normalidad
+#Autor: María Alejandra Navarro
+
+if(!require(ape)){install.packages("ape")}
+if(!require(ggplot2)){install.packages("ggplot2")}
+if(!require(ggridges)){install.packages("ggridges")}
+if(!require(plyr)){install.packages("plyr")}
+if(!require(Rmisc)){install.packages("Rmisc")}
+if(!require(dplyr)){install.packages("dplyr")}
+if(!require(biotools)){install.packages("biotools")}
+
+if(!require(moments)){install.packages("moments")}
+if(!require(nortest)){install.packages("nortest")}
+if(!require(rcompanion)){install.packages("rcompanion")}
+if(!require(car)){install.packages("car")}
+if(!require(HardyWeinberg)){install.packages("HardyWeinberg")}
+
+install.packages("glimpse")
+
+data(iris)
+data(carnivora)
+
+glimpse(iris)
+
+summary(iris)
+
+ddply(iris, "Species", summarise, grp.mean=mean(Sepal.Length),
+      grp.median=median(Sepal.Length),
+      grp.SD=sd(Sepal.Length))
+
+ggplot(iris)+
+  
+  geom_point(aes(x=Sepal.Length, y=Sepal.Width,color= Species,shape=Species))
+
+
+ggplot(iris)+
+  geom_boxplot(aes(x=Species, y=Sepal.Length, fill=Species),outlier.colour = "red", outlier.shape = 1)
+
+
+ggplot(iris ) +
+  geom_violin(aes(x=Species, y=Sepal.Length, fill=Species, color=Species),alpha=0.4,width=1.4) +
+  geom_boxplot(aes(x=Species, y=Sepal.Length),outlier.colour = "red", outlier.shape = 16,width=0.1)+
+  geom_jitter(aes(x=Species, y=Sepal.Length),alpha=0.4)
+
+
+ggplot(iris)+
+  geom_bar(aes(x=Sepal.Length, fill=Species)) #No se puede ver nada, porque los datos están solapados 
+
+
+
+ggplot(iris)+
+  geom_bar(aes(x=Sepal.Length, fill=Species))+
+  facet_wrap(~Species)# Filas ~ columnas, sino se asigna ninguna variable se asume en este caso que es una sola fila
+
+ggplot(iris) + 
+  geom_density_ridges(aes(x = Sepal.Length, y = Species)) #XComparar en un mismo espacio los dos sitios para una variable determinad
+
+
+ggplot(iris, aes(x = Sepal.Length, y = Species, fill = 0.5 - abs(0.5 - stat(ecdf)))) +
+  stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE) +
+  scale_fill_viridis_c(name = "Tail probability", direction = -1)
+
+head(lincoln_weather,10L)
+
+ggplot(lincoln_weather, aes(x = `Mean Temperature [F]`, y = Month, fill = `Mean Temperature [F]`)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01)  #me permite ver vcomo las distribuciones cambian con el tiempo
+
+ggplot(lincoln_weather, aes(x = `Mean Temperature [F]`, y = Month, fill = stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) #en temperatuira
+
+ggplot(lincoln_weather, aes(x = `Mean Temperature [F]`, y = Month, fill = stat(x))) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis_c(name = "Temp. [F]", option = "C") +
+  labs(title = 'Temperatures in Lincoln NE in 2016')
+
+data("airquality")
+
+str(airquality)
+
+
+airquality$Month <-  as.factor(airquality$Month)
+airquality$Day <-  as.factor(airquality$Day)
+
+ggplot(airquality, aes(x = Temp, y = Month, fill = stat(x))) +
+  geom_density_ridges_gradient( rel_min_height = 0.01) 
+
+
+ggplot(airquality)+
+  geom_point(aes(x=Day, y= Temp, color= Solar.R))+
+  scale_color_gradient2()+
+  facet_wrap(~Month)
+
+ggplot(iris)+
+  geom_bar(aes(x=Sepal.Length, fill=Species))+
+  facet_wrap(~Species)# Filas ~ columnas, sino se asigna ninguna variable se asume en este caso que es una sola fila
+
+
+
+
+setosa <- iris[which(iris$Species == 'setosa'),]
+
+ggplot(data = setosa, aes(x=Sepal.Length)) +
+  geom_histogram(aes(y = ..density.., fill = ..count..)) +
+  scale_fill_gradient(low = "#DCDCDC", high = "#7C7C7C") +
+  stat_function(fun = dnorm, colour = "firebrick",
+                args = list(mean = mean(setosa$Sepal.Length),
+                            sd = sd(setosa$Sepal.Length))) +
+  ggtitle("Histograma setosa + curva normal teórica") +
+  theme_bw()
+
+
+
+
+virginica <- iris[which(iris$Species == 'virginica'),]
+
+ggplot(data = virginica, aes(x=Sepal.Length)) +
+  geom_histogram(aes(y = ..density.., fill = ..count..)) +
+  scale_fill_gradient(low = "#DCDCDC", high = "#7C7C7C") +
+  stat_function(fun = dnorm, colour = "firebrick",
+                args = list(mean = mean(virginica$Sepal.Length),
+                            sd = sd(virginica$Sepal.Length))) +
+  ggtitle("Histograma virginica + curva normal teórica") +
+  theme_bw()
+
+
+ggplot(iris, aes(sample = Sepal.Length, colour = Species)) +
+  stat_qq() +
+  stat_qq_line()
+
+
+ggplot(airquality, aes(sample = Solar.R)) +
+  stat_qq() +
+  stat_qq_line()
+
+
+
+
+skewness(airquality$Solar.R,na.rm = T)
+kurtosis(airquality$Solar.R,na.rm = T)
+skewness(setosa$Sepal.Length)
+kurtosis(setosa$Sepal.Length)
+
+
+
+#Tamaño de la muestra es menor a 50
+shapiro.test(x = setosa$Sepal.Length)
+shapiro.test(x = setosa$Sepal.Width)
+shapiro.test(x = setosa$Petal.Length)
+shapiro.test(x = setosa$Petal.Width)
+
+shapiro.test(x = airquality$Wind)
+shapiro.test(x = airquality$Ozone)
+
+summary(airquality)
+
+ggplot(setosa, aes(sample = Petal.Width)) +
+  stat_qq() +
+  stat_qq_line()
+
+
+# Asumiendo que todas las muestras de Iris son de la misma especie
+
+ks.test(x = iris$Petal.Length,"pnorm", mean(iris$Sepal.Length), sd(iris$Sepal.Length))
+
+lillie.test(x = iris$Petal.Length)
+
+
+install.packages("readr")
+library("readr")
+
+getwd()
+
+Data <- read_csv("Morphological_data.csv")
+Data
+
+Mexico <- Data[which (Data$COUNTRY == "mx"),]
+Mexico
+
+
+Mexico$BL
+
+lillie.test(x = Mexico$BL )
+
+
+
+
+# F-test
+
+var.test(x = iris[iris$Species == "versicolor", "Petal.Length"],
+         y = iris[iris$Species == "virginica", "Petal.Length"] )
+
+
+
+
+# leveneTest
+
+leveneTest(iris$Sepal.Length ~ iris$Species)
+
+# bartlett
+
+bartlett.test(iris$Sepal.Length ~ iris$Species)
+
+######################################################################
+##### Transformaciones logarítmicas
+
+# *Umbra pygmaea* es un pez con abundancias no normales
+
+Turbidity = data.frame(Tur=c(1.0, 1.2, 1.1, 1.1, 2.4, 2.2, 2.6, 4.1, 5.0, 10.0, 4.0, 4.1, 4.2, 4.1, 5.1, 4.5, 5.0, 15.2, 10.0, 20.0, 1.1, 1.1, 1.2, 1.6, 2.2, 3.0, 4.0, 10.5))
+
+Turbidity
+shapiro.test(Turbidity$Tur)
+
+
+ggplot(Turbidity, aes(sample = Tur)) +
+  stat_qq() +
+  stat_qq_line()
+
+
+T_log = log(Turbidity)
+
+ggplot(T_log, aes(sample = Tur)) +
+  stat_qq() +
+  stat_qq_line()
+
+
+shapiro.test(T_log$Tur)
+
+
+###Transformación de Tukey
+###Determina el mejor tipo de transformación sigún el lamda estimado.
+
+T_tuk =  transformTukey(Turbidity$Tur)
+
+
+
+#######  Ejer: Busque una variable de la tabla de datos Mexicanos y transformela. ¿Se ajustó a los supuestos de normalidad?
+
+EEUU <- Data[which (Data$COUNTRY == "us"),]
+EEUU
+
+lillie.test(x = EEUU$WB)
+
+
+
+shapiro.test(EEUU$WB)
+ggplot(EEUU, aes(sample = WB)) +
+  stat_qq() +
+  stat_qq_line()
+
+T_tuk =  transformTukey(EEUU$WB)
+
+
+#########################################################################
+
+sex <-sample(c('M','F'),size = 150,replace = T)
+
+frq <-table(sex)
+
+frq 
+
+
+# Chi2 con dos variables nominales M y F (df= #nominales -1)
+
+chisq.test(frq)
+
+# Valor Crítico
+qchisq(0.95,1)
+
+
+# Frecuencias esperadas
+chisq.test(frq)$expected
+
+
+# El plumaje amarillo o marron de una especie de pájaro se hereda mendelianamente.
+
+Alelos <- c(MM = 18, AA = 48, AM = 15)
+
+HWChisq(Alelos, verbose = TRUE)
+
+
+
+#####Test de Independencia
+
+
+
+fila1 <- c(3, 15, 2)
+fila2 <- c(4, 2, 5)
+Vist.Flora<- as.table(rbind(fila1, fila2))
+dimnames(Vist.Flora) = list(Peso = c("Sp1","Sp2"),
+                            Estado_civil = c("Amarilla","Roja","Blanca"))
+Vist.Flora
+
+
+fisher.test(x = Vist.Flora)
+
+
+##### Una variable con dos muestras independientes - Paramétricos - variables de medida
+##t.test para comparar dos medias independientes u otros estadísticos de posición
+
+
+DedosArboreos <- round(sample(runif(2000, 6, 10), 50),1)
+
+DedosRastreros <- round(sample(runif(2000, 4, 8), 50),1)
+
+
+# Ha=  que las medias sean diferentes
+t.test(DedosArboreos,DedosRastreros, alternative = "two.sided")}
+
+
+# Ha=  que la media de x sea más grande que la media de y 
+t.test(DedosArboreos,DedosRastreros, alternative = "greater")
+
+# Ha=  que la media de x sea más pequeña que la media de y 
+t.test(DedosArboreos,DedosRastreros, alternative = "less")
+
+
+
+##### t.test para comparar una observación con una media
+
+
+# Caso especial, ver Box 9.7 Sokal & Rohlf
+
+alasPáramo <- round(sample(runif(2000, 6, 8), 33),1) # mm
+
+mu.y <- mean(alasPáramo)
+var.y <- var(alasPáramo)
+sd.y <- sd(alasPáramo)
+n <- 33
+
+
+alaBlosqueNublado <- 10
+
+alaBlosqueNublado-mu.y-0/sd.y*sqrt(n+1/n)
+
+df=33-1
+df
+# Es significativa la diferencia??
+
+
+################### Test de igualdad de dos varianzas #################
+
+
+# ver Box 8.1 Sokal & Rohlf
+
+# Hembras
+n.f <- 10
+mean.f <- 8.5 # días
+var.f <- 3.6
+df.f <- 9 # n-1
+
+# Machos
+n.m <- 10
+mean.m <- 4.5 # días
+var.m <- 0.9
+
+df.m <- 9 # n-1
+
+
+
+# Cálculo de F = varianza más grande / varianza más pequeña
+
+var.f/var.m 
+
+
+#Si F < 3.18 No se rechaza Ho, as 0.95
+
+#Si la F > 3.18 se rechaza Ho.
+
+# Es significativa la diferencia??
+
+
+
+
+####Test para evaluar diferencias entre dos medias con varianzas desiguales###
+
+# ver Box 8.1 Sokal & Rohlf
+
+# Hembras
+
+data.f <- rnorm(n = 10,mean = 8.5,sd = 1.9)
+data.f
+
+n.f <- 10
+mean.f <- mean(data.f) # días
+
+var.f <- 3.6
+sd.m <- sd(data.f)
+
+df.f <- 9 # n-1
+# Machos
+data.m <- rnorm(n = 10,mean = 4.5,sd = 0.95)
+data.m 
+
+
+n.m <- 10
+mean.m <-  mean(data.m)# días
+mean.m 
+
+
+var.m <- 0.9
+sd.m <-  sd(data.m)
+
+# Ha=  que las medias sean diferentes
+
+t.test(DedosArboreos,DedosRastreros, alternative = "two.sided",var.equal = F)
+
+
+# Ha=  que la media de x sea más grande que la media de y 
+
+t.test(DedosArboreos,DedosRastreros, alternative = "greater",var.equal = F)
+
+
+# Ha=  que la media de x sea más pequeña que la media de y 
+
+t.test(DedosArboreos,DedosRastreros, alternative = "less",var.equal = F)
+
+
+
+
+
+############
+###Una variable con dos muestras independientes - No paramétricos - Varaibles Ranquedas
+
+
+#Man-Whitney/ U-test
+
+
+Subpáramo = c(16, 18, 2, 4, 4, 15,12,14,10,1,16, 18, 2, 4, 4, 15,12,14,10,1,16, 18, 2, 4, 4, 15,12,14,10,1)
+BosqueMontanobajo = c(1, 1, 4, 3, 5, 6,1,1,1,9,1, 1, 4, 3, 5, 6,1,1,1,9,1, 1, 4, 3, 5, 6,1,1,1,9)
+
+# Ha=  que las sumatoria de rangos sean diferentes
+wilcox.test(Subpáramo,BosqueMontanobajo, alternative = "two.sided")
+
+
+######### Pruebas pareadas - Paramétricos - variables de medida #############
+
+
+#t-pareada
+Inicial = rnorm(30,2.5,0.2)
+SeisMeses = rnorm(30,7.5,1)
+
+# Ha=  que las medias sean diferentes
+
+t.test(Inicial,SeisMeses, alternative = "two.sided",var.equal = T,paired = T)
+
+
+# Ha=  que la media de x sea más grande que la media de y 
+
+t.test(Inicial,SeisMeses, alternative = "greater",var.equal = T,paired = T)
+
+
+# Ha=  que la media de x sea más pequeña que la media de y 
+
+t.test(Inicial,SeisMeses, alternative = "less",var.equal = T,paired = T)
+
+
+############# Pruebas pareadas - No paramétricos - Varaibles Ranquedas#########
+#Test de rangos Wilcoxon
+
+
+Inicial = rgamma(30,shape = 2,scale = 0.4)
+SeisMeses = rgamma(30,shape = 2,scale = 1)
+
+# Ha=  que las medias sean diferentes
+
+wilcox.test(Inicial,SeisMeses, alternative = "two.sided",var.equal = T,paired = T)
+
+
+# Ha=  que la media de x sea más grande que la media de y 
+
+wilcox.test(Inicial,SeisMeses, alternative = "greater",var.equal = T,paired = T)
+
+# Ha=  que la media de x sea más pequeña que la media de y 
+
+wilcox.test(Inicial,SeisMeses, alternative = "less",var.equal = T,paired = T)
