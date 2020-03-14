@@ -1,0 +1,185 @@
+####SEMANA 14 ANOVA
+#Autor: María Alejandra Navarro Corredor
+
+## Instalar paquetes
+if(!require(tidyverse)){install.packages("tidyverse")}
+
+if(!require(ggpubr)){install.packages("ggpubr")}
+
+if(!require(rstatix)){install.packages("rstatix")}
+
+if(!require(car)){install.packages("car")}
+
+if(!require(multcomp)){install.packages("multcomp")}
+
+
+if(!require(ggplot2)){install.packages("ggplot2")}
+
+library(tidyverse)
+library(ggpubr)
+library(rstatix)
+library(multcomp)
+
+################################# ANOVA ################## son diferentes las medias 
+
+#siempre hay una variable categótica
+###### ANOVA DE UNA VIA ###
+
+data("PlantGrowth")
+PlantGrowth
+head(PlantGrowth)
+
+PlantGrowth
+
+levels(PlantGrowth$group)
+
+summarise(.data = group_by(PlantGrowth, group),
+          count = n(),
+          mean = mean(weight, na.rm = TRUE),
+          sd = sd(weight, na.rm = TRUE)
+)
+
+
+# Identificando outliers
+
+PlantGrowth2 <- data.frame(ctrl=PlantGrowth[which(PlantGrowth$group==levels(PlantGrowth$group)[1]),1],
+                           trt1=PlantGrowth[which(PlantGrowth$group==levels(PlantGrowth$group)[2]),1],
+                           trt2=PlantGrowth[which(PlantGrowth$group==levels(PlantGrowth$group)[3]),1])
+
+head(PlantGrowth2 )
+
+OutVals = boxplot(PlantGrowth2)$out
+
+OutVals
+
+#que posición es 6.3
+x <- which(PlantGrowth$weight %in% OutVals)
+#Aquíle resto 
+PlantGrowth3 <- PlantGrowth[-x, ]
+
+
+# Asumiendo que ya se revisó todos los supuestos de la prueba, entonces procedemos a estimar si existen diferencias entre las medias de los tres tratamientos
+
+anov2 <- aov(PlantGrowth3$weight ~ PlantGrowth3$group)
+summary(anov2)
+anov2
+
+#F indica que estamos comparando sobre una distribución F con numerador de 2 y denominador de 27. P-value: es el p que nos indica si existen o no diferencias en al menos un grupo. ¿ Existen diferencias significativas? ¿Exísten diferencias entre los tratamientos?
+
+#Cuando existen diferencias significativas entre los grupos, con solo una anova no podremos distinguir cuál de esos grupos son diferentes. Por tanto, debemos recurrir a otras pruebas para poder distinguir cuales o cuál el el grupo que está siendo diferente de los demás. Para el caso de pruebas paramétricas podremos usar un test post-hoc de Tukey cuando asumimos homogeneidad de varianzas. 
+
+
+TukeyHSD(anov2)
+
+
+oneway.test(PlantGrowth3$weight ~ PlantGrowth3$group,var.equal = F)
+
+
+#Cuando las muestras no cumplen el supuesto de homogeneidad de varianzas una prueba Welch one-way test puede ser la mejor alternativa en estos casos (es decir, cuando el test de Levene da significativo)
+
+oneway.test(PlantGrowth3$weight ~ PlantGrowth3$group,var.equal = F)
+
+
+## o 
+
+rstatix::welch_anova_test(PlantGrowth3,weight ~group) #NORMALIDAD, pero no hay HOMOGENEIDAD DE VAR.
+
+#test de pares
+rstatix::pairwise_t_test(PlantGrowth3,
+                         weight ~ group,
+                         p.adjust.method = "bonferroni"
+)
+
+
+#EJER: vuelva a realizar el estimación sin eliminar outliers. Evalúe los supuesto de la anova en la variable peso. ¿Qué encuentra? ¿Qué supuesto no se cumple? Si no se cumple algún supuesto ¿Qué debería probar antes de pensar en una prueba no paramétrica?
+
+
+
+
+
+
+
+
+
+#################################################################################################
+# Alternativa no paramétrica
+
+#El análogo de ANOVA en no paramétricas
+kruskal.test(weight ~ group, data = PlantGrowth3)
+
+#Análogo de Tuque
+pairwise.wilcox.test(PlantGrowth$weight, PlantGrowth$group)
+
+
+#Ejer: Lea los datos de morphological_data.csv. Haga una análisis de varianza para la primera variable de medida ‘BL’. Recuerde que para realizar un análisis de varianza debe evaluar los supuesto de la prueba.
+
+
+normalidad
+homogeneidad
+outlier
+
+morf <- read.csv("Morphological_data.csv")
+morfologia <- data.frame(morf$COUNTRY, morf$BL)
+morfologia
+
+levels(morfologia$morf.COUNTRY)
+
+
+summarise(.data = group_by(morfologia, morf.COUNTRY ),
+          count = n(),
+          mean = mean(morf$BL, na.rm = TRUE),
+          sd = sd(morf$BL, na.rm = TRUE)
+)
+
+
+# Identificando outliers
+
+morfologia2 <- data.frame(ctrl=morfologia[which(morfologia$morf.COUNTRY==levels(morfologia$morf.COUNTRY)[1]),1],
+                           trt1=morfologia[which(morfologia$morf.COUNTRY==levels(morfologia$morf.COUNTRY)[2]),1])
+
+head(morfologia2 )
+
+
+
+##################################################################################################Anova de dos vías
+#tienen dos factores, de dos variables categóricos
+#dependiendo de la dosis y el tipo de supemento
+data("ToothGrowth")
+
+str(ToothGrowth)
+
+?ToothGrowth
+
+
+help(ToothGrowth)
+
+# Aunque dosis es una variable numérica en este caso, debemos convertirla en factores para evaluar la relación de la dosis, el tipo de suplemento y el crecimiento de los dientes.
+
+ToothGrowth$dose <- factor(ToothGrowth$dose, 
+                           levels = c(0.5, 1, 2),
+                           labels = c("D0.5", "D1", "D2"))
+head(ToothGrowth)
+
+str(ToothGrowth)
+
+ggplot(ToothGrowth)+
+  geom_boxplot(aes(x=dose,y=len, fill=supp))
+# Tengo que usar análisis exploratorios, para poder saber hacia donde desvío mi análisis
+
+
+indepen <- aov(len ~ supp + dose, data = ToothGrowth) #independiente
+summary(indepen)
+
+interact <- aov(len ~ supp * dose, data = ToothGrowth) #Interacción - Modelo interactivo
+summary(interact)
+
+TukeyHSD(indepen) #para ver todas la sposibles combinciones
+
+TukeyHSD(interact)
+
+pairwise.t.test(ToothGrowth$len,ToothGrowth$dose, p.adjust.method = "BH")
+
+
+
+
+
