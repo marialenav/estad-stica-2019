@@ -1,0 +1,376 @@
+# PROYECTO BEGONIA
+#Autor 1: María Alejandra Navarro Corredor - 2161578
+#Autor 2: Angélica Fernández Rangel
+
+
+install.packages("car")
+library(car)
+library(Hmisc)
+
+#Muestreo 
+setwd("C:/Users/USER/Desktop/Proyecto Begonia")
+DATOS <- read.csv(file = "muestra.csv", header= T, sep= ";" )
+View(DATOS)
+
+#Muestreo aleatorio ara hallar A y B
+Muestreo_1 <- sample(x = 1:315 , size = 63 , replace = T)
+Muestreo_1
+
+M1 <- DATOS[Muestreo_1, ]
+M1
+
+
+#modelos a evaluar 
+regresion <- lm(M1$ANCHO~M1$LARGO) #Y= A+B(Ancho)
+summary(regresion)
+plot(M1$ANCHO, M1$LARGO) #Dispersión
+
+regresion2 <- lm(M1$LARGO ~ M1$ANCHO) #Y=A+B(Largo)
+summary(regresion2)
+plot(M1$LARGO, M1$ANCHO) #Dispersión
+
+producto<-(M1$LARGO*M1$ANCHO) #Anchoo en función del producto
+regresion3 <- lm(M1$ANCHO ~ producto) #LA FORMULA A USAR Y=A+B(producto)
+summary(regresion3)
+plot(M1$ANCHO,producto)
+
+
+regresion4 <- lm(M1$LARGO ~ producto)
+summary(regresion4)
+plot(M1$LARGO,producto)
+
+par(mfrow=c(1,3))
+plot(M1$LARGO,M1$ANCHO, xlab = "Largo", ylab = "Ancho")
+plot(M1$ANCHO,producto, xlab = "Ancho", ylab = "Producto")
+plot(M1$LARGO,producto, xlab = "Largo", ylab = "Producto")
+
+
+##########################################################################################################################
+#Muestreo en Bucaramanga *ALEATORIO*
+
+largoBga <- runif(150, 4.5, 8.5)
+largoBga
+
+AnchoBga <- runif(150, 2.5, 4)
+AnchoBga
+
+DatosBga <- data.frame(cbind(Hojas = 1:5, largoBga, AnchoBga))
+View(DatosBga)
+
+write.table(DatosBga, file = "Bga.txt")
+
+
+#######################################################################################################################
+
+
+##############################    DATOS HOJAS    ##############################    
+
+####  DATOS DEL LARGO Y EL ANCHO 
+TAhLh <- read.csv(file = "AnchoLargoHojas.csv", header= T, sep= ";")
+View(TAhLh)
+
+summary(TAhLh)
+
+#largo
+
+LargoH <- data.frame(TAhLh$Localidad, TAhLh$Largo)
+LargoH
+describe(LargoH)
+
+BmgaLh <- LargoH[which(LargoH$TAhLh.Localidad == "Bucaramanga"),] 
+BmgaLh
+describe(BmgaLh)
+sd(BmgaLh$TAhLh.Largo)
+
+SrroLh <- LargoH[which(LargoH$TAhLh.Localidad == "Socorro"),]
+SrroLh
+describe(SrroLh)
+sd(SrroLh$TAhLh.Largo)
+
+
+TnLh <- LargoH[which(LargoH$TAhLh.Localidad == "Tona"),]
+TnLh
+describe(TnLh)
+sd(TnLh$TAhLh.Largo)
+
+#Ancho
+
+Anchoh <- data.frame(TAhLh$Localidad, TAhLh$Ancho)
+Anchoh
+describe(Anchoh)
+
+BmgaAh <- Anchoh[which(Anchoh$TAhLh.Localidad == "Bucaramanga"),]
+BmgaAh
+describe(BmgaAh$TAhLh.Ancho)
+sd(BmgaAh$TAhLh.Ancho)
+
+SrroAh <- Anchoh[which(Anchoh$TAhLh.Localidad == "Socorro"),]
+SrroAh
+describe(SrroAh)
+sd(SrroAh$TAhLh.Ancho)
+
+TnAh <- Anchoh[which(Anchoh$TAhLh.Localidad == "Tona"),]
+TnAh
+describe(TnAh)
+sd(TnAh$TAhLh.Ancho)
+
+##############################################################################################
+
+#AREAS / HOJAS
+setwd("C:/Users/USER/Desktop/Proyecto Begonia")
+AREA <- read.csv(file = "Datos.csv", header= T, sep= ";" )
+View(AREA)
+AREA
+
+
+#Detalles
+summary(AREA)
+
+# HISTOGRAMA de frecuencias de la población
+
+
+
+############ Bucaramanga
+Bucaramangah <- AREA[which(AREA$Localidad == "Bucaramanga"), ]
+Bucaramangah
+
+hist(Bucaramangah$Area,col = "beige", xlab = "Area (hojas)", ylab = "Frecuencia", main = "BUCARAMANGA")
+
+describe(Bucaramangah)
+
+qqnorm(Bucaramangah$Area)  
+qqline(Bucaramangah$Area)   #Linea 
+boxplot(Bucaramangah$Area) #BOXPLOT - CAJAS Y BIGOTES
+
+#NORMALIDAD_SHAPIRO_WILK
+shapiro.test(Bucaramangah$Area)
+
+#TRANSFORMAR
+T_log = log(Bucaramangah$Area)
+shapiro.test(T_log)
+
+############ SOCORRO
+Socorroh <- AREA[which(AREA$Localidad == "Socorro"), ]
+Socorroh
+
+hist(Socorroh$Area,col = "beige",  xlab = "Area", ylab = "Frecuencia", main = "SOCORRO")
+
+describe(Socorroh)
+
+qqnorm(Socorroh$Area)  
+qqline(Socorroh$Area)
+boxplot(Socorroh$Area) #BOXPLOT - CAJAS Y BIGOTES
+
+#NORMALIDAD_SHAPIRO_WILK
+shapiro.test(Socorroh$Area)
+
+#TRANSFORMAR
+T_log = log(Socorroh$Area)
+shapiro.test(T_log)
+
+
+###############   TONA
+Tonah <- AREA[which(AREA$Localidad == " Tona"), ]
+Tonah
+
+hist(x = Tonah$Area, col = "beige", xlab = "Area (hojas)", ylab = "Frecuencia", main = "TONA")
+
+describe(Tonah)
+
+qqnorm(Tonah$Area)  
+qqline(Tonah$Area)  #Linea tendencia
+boxplot(Tonah$Area) #BOXPLOT - CAJAS Y BIGOTES
+
+#NORMALIDAD_SHAPIRO_WILK
+shapiro.test(Tonah$Area)
+
+#TRANSFORMAR
+T_log = log(Tonah$Area)
+shapiro.test(T_log)
+
+
+
+boxplot(Bucaramangah$Area,Socorroh$Area,Tonah$Area)
+
+par(mfrow=c(1,3))
+
+qqnorm(Bucaramangah$Area, main = "BUCARAMANGA")  
+qqline(Bucaramangah$Area) 
+qqnorm(Socorroh$Area, main = "SOCORRO")  
+qqline(Socorroh$Area)
+qqnorm(Tonah$Area, main = "TONA")  
+qqline(Tonah$Area)
+
+
+#### TEST PARA HOMOGENEIDAD DE VARIANZA 
+leveneTest(AREA$Area,AREA$Localidad)
+
+#### TEST Kruskal-Wallis ### DATOS NO PARAMÉTRICOS
+kruskal.test(AREA$Area~AREA$Localidad)
+
+pairwise.wilcox.test(AREA$Area, AREA$Localidad) #PARA VER DIFERENCIAS SIGNIFICATIVAS ENTRE LOCALIDADES
+
+
+##########################################################################################################################
+
+##########################################################################################################################
+
+
+##############################    DATOS INDIVIDUOS    ##############################    
+
+####  DATOS DEL LARGO Y EL ANCHO 
+TALind <- read.csv(file = "AnchoLargoind.csv", header= T, sep= ";")
+View(TALind)
+
+#largo
+
+LargoI <- data.frame(TALind$Localidad, TALind$Largo)
+LargoI
+describe(LargoI)
+
+BmgaLI <- LargoI[which(LargoI$TALind.Localidad == "Bucaramanga"),] 
+BmgaLI
+describe(BmgaLI)
+sd(BmgaLI$TALind.Largo)
+
+SrroLI <- LargoI[which(LargoI$TALind.Localidad == "Socorro"),]
+SrroLI
+describe(SrroLI)
+sd(SrroLI$TALind.Largo)
+
+
+TnLI <- LargoI[which(LargoI$TALind.Localidad == "Tona"),]
+TnLI
+describe(TnLI)
+sd(TnLI$TALind.Largo)
+
+#Ancho
+
+AnchoI <- data.frame(TALind$Localidad, TALind$Ancho)
+AnchoI
+describe(AnchoI)
+
+BmgaAI <- AnchoI[which(AnchoI$TALind.Localidad == "Bucaramanga"),]
+BmgaAI
+describe(BmgaAI)
+sd(BmgaAI$TALind.Ancho)
+
+SrroAI <- AnchoI[which(AnchoI$TALind.Localidad == "Socorro"),]
+SrroAI
+describe(SrroAI)
+sd(SrroAI$TALind.Ancho)
+
+TnAI <- AnchoI[which(AnchoI$TALind.Localidad == "Tona"),]
+TnAI
+describe(TnAI)
+sd(TnAI$TALind.Ancho)
+
+
+#AREAS / INDIVIDUOS
+
+setwd("C:/Users/USER/Desktop/Proyecto Begonia")
+INDIVIDUOS <- read.csv(file = "INDIVIDUOS.csv", header= T, sep= ";" )
+View(INDIVIDUOS)
+
+
+#detalles
+summary(INDIVIDUOS)
+
+
+# HISTOGRAMA de frecuencias de la población
+
+#Bucaramanga
+Bucaramangaind <- INDIVIDUOS[which(INDIVIDUOS$Localidad == "Bucaramanga"), ]
+Bucaramangaind
+
+hist(Bucaramangaind$Area, col = "beige", xlab = "Area (individuos)", ylab = "Frecuencia", main = "BUCARAMANGA")
+
+
+describe(Bucaramangaind)
+
+qqnorm(Bucaramangaind$Area)  
+qqline(Bucaramangaind$Area)   #Linea 
+boxplot(Bucaramangaind$Area) #BOXPLOT - CAJAS Y BIGOTES
+
+
+####NORMALIDAD_SHAPIRO_WILK
+shapiro.test(Bucaramangaind$Area) #Distribución no normal
+
+#TRANSFORMAR
+T_log = log(Bucaramangaind$Area)
+shapiro.test(T_log) #Distribución no normal
+
+
+############ SOCORRO
+Socorroind <- INDIVIDUOS[which(INDIVIDUOS$Localidad == "Socorro"), ]
+Socorroind
+
+hist(Socorroind$Area, col = "beige", xlab = "Area (individuos)", ylab = "Frecuencia", main = "SOCORRO")
+
+describe(Socorroind)
+
+qqnorm(Socorroind$Area)  
+qqline(Socorroind$Area)
+boxplot(Socorroind$Area) #BOXPLOT - CAJAS Y BIGOTES
+
+####NORMALIDAD_SHAPIRO_WILK
+shapiro.test(Socorroind$Area) #Distribución normal
+
+
+###############   TONA
+Tonaind <- INDIVIDUOS[which(INDIVIDUOS$Localidad == "Tona"), ]
+Tonaind
+
+hist(x = Tonaind$Area, col = "beige", xlab = "Area (individuos)", ylab = "Frecuencia", main = "TONA")
+
+describe(Tonaind)
+
+
+qqnorm(Tonaind$Area)  
+qqline(Tonaind$Area)  #Linea tendencia
+boxplot(Tonaind$Area) #BOXPLOT - CAJAS Y BIGOTES
+
+####NORMALIDAD_SHAPIRO_WILK
+shapiro.test(Tonaind$Area) #Distribución normal
+
+
+boxplot(Bucaramangaind$Area,Socorroind$Area, Tonaind$Area)
+
+par(mfrow=c(1,3))
+qqnorm(Bucaramangaind$Area, main = "BUCARAMANGA")  
+qqline(Bucaramangaind$Area) 
+qqnorm(Socorroind$Area, main = "SOCORRO")  
+qqline(Socorroind$Area)
+qqnorm(Tonaind$Area, main = "TONA") 
+qqline(Tonaind$Area) 
+
+####
+### Datos AREA-LOCALIDAD 
+#### TEST PARA HOMOGENEIDAD DE VARIANZA 
+leveneTest(INDIVIDUOS$Area, INDIVIDUOS$Localidad)
+
+
+#### TEST Kruskal-Wallis ### DATOS NO PARAMÉTRICOS
+kruskal.test(INDIVIDUOS$Area~INDIVIDUOS$Localidad)
+
+pairwise.wilcox.test(INDIVIDUOS$Area, INDIVIDUOS$Localidad)#PARA VER DIFERENCIAS SIGNIFICATIVAS ENTRE LOCALIDADES
+
+library("car")
+par(mfrow=c(2,3))
+qqnorm(Bucaramangah$Area, main = "BUCARAMANGA")  
+qqline(Bucaramangah$Area) 
+qqnorm(Socorroh$Area, main = "SOCORRO")  
+qqline(Socorroh$Area)
+qqnorm(Tonah$Area, main = "TONA")  
+qqline(Tonah$Area)
+qqnorm(Bucaramangaind$Area, main = "BUCARAMANGA")  
+qqline(Bucaramangaind$Area) 
+qqnorm(Socorroind$Area, main = "SOCORRO")  
+qqline(Socorroind$Area)
+qqnorm(Tonaind$Area, main = "TONA") 
+qqline(Tonaind$Area) 
+
+
+par(mfrow=c(1,2))
+boxplot(Bucaramangah$Area,Socorroh$Area,Tonah$Area)
+boxplot(Bucaramangaind$Area,Socorroind$Area, Tonaind$Area)
